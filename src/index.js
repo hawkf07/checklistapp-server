@@ -2,6 +2,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
+import cors from "cors";
 
 import { db } from "./db/index.js";
 import { users } from "./db/schema.js";
@@ -29,10 +30,16 @@ const isAuthJWT = (req, res, next) => {
 };
 
 const app = express();
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 
 app.use(
   bodyParser.urlencoded({
-    extended: false,
+    extended: true,
   })
 );
 app.use(cookieParser());
@@ -41,22 +48,24 @@ app.use(bodyParser.json());
 app.post("/login", async (req, res, next) => {
   const { username, email, password } = req.body;
   const allUsers = await getUser(username || email);
+
   const user = allUsers[0];
-  console.log(user);
-  if (!user) {
+  if (user == undefined) {
     res.send("No user founded");
   }
   const isMatch = await bcrypt.compare(password, user.password);
+
   if (!isMatch) {
-    res.send("Password not match!");
+    res.send({ message: "password not match" });
   }
 
   const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "1h" });
-  res.cookie("token", token, { httpOnly: true });
-  res.status(200).send({ message: "successfully login" });
+  res
+    .cookie("token", token, { httpOnly: false, maxAge: 1000 * 60 * 10 })
+    .send("cookie send!");
 });
 
-app.post("/add", isAuthJWT, (req, res, next) => {
+app.get("/add", isAuthJWT, (req, res, next) => {
   try {
     res.send({ message: "The Token is Valid!" });
   } catch (err) {
@@ -64,19 +73,24 @@ app.post("/add", isAuthJWT, (req, res, next) => {
   }
 });
 app.post("/signup", async (req, res, next) => {
-  const { email, username, password } = req.body;
-
-  const hashedPassword = await bcrypt.hash(password, 12);
-
-  await db
-    .insert(users)
-    .values({
-      email,
-      password: hashedPassword,
-      username,
-    })
-    .then((value) => res.send(value))
-    .catch((error) => res.send(error));
+  try {
+    const { username, email, password } = req.body;
+    console.log(req.body, " is body");
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db
+      .insert(users)
+      .values({
+        email,
+        password: hashedPassword,
+        username,
+      })
+      .then((value) =>
+        res.status(200).send({ message: "user successfully created" })
+      )
+      .catch((error) => res.send(error));
+  } catch (error) {
+    return res.status(400).json(error);
+  }
 });
 
 app.post("/logout", (req, res, next) => {
