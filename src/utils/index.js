@@ -1,5 +1,7 @@
 import { users } from "../db/schema.js";
 import jwt from "jsonwebtoken";
+import { db } from "../db/index.js";
+import { eq } from "drizzle-orm";
 
 export const getUser = async (input) => {
   const user = db

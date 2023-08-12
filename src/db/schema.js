@@ -33,7 +33,7 @@ export const notes = pgTable("notes", {
   id: serial("id").notNull().primaryKey(),
   title: varchar("title", { length: 256 }).notNull(),
   description: varchar("description", { length: 256 }).notNull(),
-  body: text(),
+  body: text("body"),
   date_created: date("date_created").defaultNow(),
   date_updated: date("date_updated").defaultNow(),
 });

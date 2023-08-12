@@ -1,6 +1,7 @@
-import { isAuthJWT } from "../utils/index.js";
+import { getUser, isAuthJWT } from "../utils/index.js";
 import { Router } from "express";
 const router = Router();
+import bcrypt from "bcrypt";
 
 router.post("/login", async (req, res, next) => {
   const { username, email, password } = req.body;
