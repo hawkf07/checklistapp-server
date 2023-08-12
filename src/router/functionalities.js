@@ -2,12 +2,18 @@ import { Router } from "express";
 
 const router = Router();
 
+router.get("/", (req, res) => {
+  res.send({
+    message: "root",
+  });
+});
 // add notes
 router.post("/add_notes", (req, res, next) => {});
 //get notes
 router.get("/get_notes", (req, res, next) => {
+  console.log(req.user);
   res.status(200).send({
-    id: req.user.id,
+    message: "user is authenticated",
   });
 });
 //delete notes

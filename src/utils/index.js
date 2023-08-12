@@ -12,14 +12,17 @@ export const getUser = async (input) => {
 };
 
 export const isAuthJWT = (req, res, next) => {
-  const token = req.cookies.token;
-
+  const cookie = req.cookies;
   try {
+    const token = req.cookies.token;
     const user = jwt.verify(token, process.env.JWT_SECRET);
     req.user = user;
     next();
   } catch (error) {
     res.clearCookie("token");
-    res.redirect("/login");
+    console.log(error);
+    console.log(JSON.stringify(cookie), "is cookies");
+
+    res.send({ message: "error user is not authenticated", error });
   }
 };
