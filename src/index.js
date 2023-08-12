@@ -9,6 +9,8 @@ import { users } from "./db/schema.js";
 import bodyParser from "body-parser";
 import { eq } from "drizzle-orm";
 import { router } from "./router/api.js";
+import functionsRouter from "./router/functionalities.js";
+import { isAuthJWT } from "./utils/index.js";
 const app = express();
 
 app.use(
@@ -26,6 +28,7 @@ app.use(
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use("/api", router);
+app.use("/api", isAuthJWT, functionsRouter);
 app.get("/", (req, res, next) => {
   res.send({ message: "hello from fikri" });
 });

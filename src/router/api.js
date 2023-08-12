@@ -1,6 +1,7 @@
 import { isAuthJWT } from "../utils/index.js";
 import { Router } from "express";
 const router = Router();
+
 router.post("/login", async (req, res, next) => {
   const { username, email, password } = req.body;
   const allUsers = await getUser(username || email);
@@ -21,18 +22,6 @@ router.post("/login", async (req, res, next) => {
     .send("cookie send!");
 });
 
-router.get("/", (req, res, next) => {
-  res.status(200).send({
-    message: "Root",
-  });
-});
-router.get("/add", isAuthJWT, (req, res, next) => {
-  try {
-    res.send({ message: "The Token is Valid!" });
-  } catch (err) {
-    res.send({ message: "Error " + err });
-  }
-});
 router.post("/signup", async (req, res, next) => {
   try {
     const { username, email, password } = req.body;

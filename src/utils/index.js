@@ -1,4 +1,5 @@
 import { users } from "../db/schema.js";
+import jwt from "jsonwebtoken";
 
 export const getUser = async (input) => {
   const user = db
@@ -10,6 +11,7 @@ export const getUser = async (input) => {
 
 export const isAuthJWT = (req, res, next) => {
   const token = req.cookies.token;
+
   try {
     const user = jwt.verify(token, process.env.JWT_SECRET);
     req.user = user;
