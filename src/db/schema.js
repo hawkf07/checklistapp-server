@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   PgSerial,
   PgText,
@@ -8,6 +9,7 @@ import {
   serial,
   text,
   varchar,
+  foreignKey,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -16,6 +18,13 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 256 }).unique().notNull(),
   password: text("password").notNull(),
   date_created: date("date_created").defaultNow(),
+});
+
+export const usersRelations = relations(users, ({ many }) => {
+  return {
+    todos: many(todos),
+    notes: many(notes),
+  };
 });
 
 // plain text todos
@@ -28,6 +37,13 @@ export const todos = pgTable("todos", {
   completed: boolean("completed").default(false),
 });
 
+export const todosRelations = relations(todos, ({ one }) => ({
+  author: one(users, {
+    fields: [todos.id],
+    references: [users.id],
+  }),
+}));
+
 // notes with markdown
 export const notes = pgTable("notes", {
   id: serial("id").notNull().primaryKey(),
@@ -37,3 +53,10 @@ export const notes = pgTable("notes", {
   date_created: date("date_created").defaultNow(),
   date_updated: date("date_updated").defaultNow(),
 });
+
+export const notesRelations = relations(notes, ({ one }) => ({
+  author: one(users, {
+    fields: [notes.id],
+    references: [users.id],
+  }),
+}));
