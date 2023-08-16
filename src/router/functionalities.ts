@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db } from "../db/index.js";
-import { todos, users } from "../db/schema.js";
+import { notes, todos, users } from "../db/schema.js";
 
 const router = Router();
 
@@ -13,6 +13,8 @@ router.get("/", (req, res) => {
 router.post("/add_notes", async (req, res, next) => { });
 //get notes
 router.get("/get_notes", (req, res, next) => {
+  const note = db.select().from(users);
+
   res.status(200).send({
     message: "user is authenticated",
   });

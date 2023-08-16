@@ -29,7 +29,7 @@ app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/functions", isAuthJWT, functionsRouter);
 app.get("/", (req, res, next) => {
-  res.send({ message: "hello from fikri" });
+  res.send({ message: "root" });
 });
 
 app.listen(5000, () => console.log("listening on port", 5000));
